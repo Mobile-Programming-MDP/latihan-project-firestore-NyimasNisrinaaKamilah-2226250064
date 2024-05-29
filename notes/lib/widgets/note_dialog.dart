@@ -30,6 +30,13 @@ class _NoteDialogState extends State<NoteDialog> {
     }
   }
 
+  Future<void> _getLocation() async {
+    final location = await LocationService().getCurrentLocaton();
+    setState(() {
+      _position = location;
+    });
+  }
+
   Future<void> _pickImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -38,13 +45,6 @@ class _NoteDialogState extends State<NoteDialog> {
         _imageFile = pickedFile;
       });
     }
-  }
-
-  Future<void> _getLocation() async {
-    final location = await LocationService().getCurrentLocation();
-    setState(() {
-      _position = location;
-    });
   }
 
   @override
@@ -97,8 +97,8 @@ class _NoteDialogState extends State<NoteDialog> {
           ),
           Text(
             _position?.latitude != null && _position?.longitude != null
-                ? "Current Location: ${_position!.latitude.toString()},${_position!.longitude.toString()}"
-                : "Current Location: ${widget.note?.lat}, ${widget.note?.lng}",
+                ? "Current Location : ${_position!.latitude.toString()}, ${_position!.longitude.toString()}"
+                : "Current Location : ${widget.note?.lat}, ${widget.note?.lng}",
             textAlign: TextAlign.start,
           )
         ],

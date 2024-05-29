@@ -14,10 +14,9 @@ class NoteService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;
 
   static Future<String?> uploadImage(XFile imageFile) async {
-    
     try {
       String fileName = path.basename(imageFile.path);
-      Reference ref = _storage.ref().child('images/users').child('/$fileName');
+      Reference ref = _storage.ref().child('images').child('/$fileName');
       UploadTask uploadTask;
       if (kIsWeb) {
         uploadTask = ref.putData(await imageFile.readAsBytes());

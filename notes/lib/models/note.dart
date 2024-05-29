@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Note {
   String? id;
-  final String? title;
-  final String? description;
+  final String title;
+  final String description;
   String? imageUrl;
   String? lat;
   String? lng;
@@ -14,9 +14,9 @@ class Note {
     this.id,
     required this.title,
     required this.description,
+    this.imageUrl,
     this.lat,
     this.lng,
-    this.imageUrl,
     this.createdAt,
     this.updatedAt,
   });
