@@ -12,7 +12,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  if (kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     await FlutterConfig.loadEnvVariables();
   }
   runApp(const MyApp());
