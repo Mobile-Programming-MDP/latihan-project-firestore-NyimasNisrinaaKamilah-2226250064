@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:notes/main.dart';
 import 'package:notes/models/note.dart';
 import 'package:notes/screens/google_maps_screen.dart';
 import 'package:notes/services/note_service.dart';
 import 'package:notes/widgets/note_dialog.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class NoteListScreen extends StatefulWidget {
-  const NoteListScreen({super.key});
+  final VoidCallback toggleDarkMode;
+
+  const NoteListScreen({super.key, required this.toggleDarkMode});
 
   @override
   State<NoteListScreen> createState() => _NoteListScreenState();
@@ -18,6 +26,13 @@ class _NoteListScreenState extends State<NoteListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes'),
+         actions: [
+          IconButton(
+              icon: Icon(Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode),
+              onPressed: widget.toggleDarkMode),
+        ],
       ),
       body: const NoteList(),
       floatingActionButton: FloatingActionButton(
@@ -116,6 +131,18 @@ class NoteList extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () {
+                                _shareImage(document);
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 10),
+                                child: Icon(Icons.share_outlined),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                              onTap: () {
                                 showAlertDialog(context, document);
                               },
                               child: const Padding(
@@ -136,6 +163,23 @@ class NoteList extends StatelessWidget {
     );
   }
 
+  void _shareImage(Note document) async {
+    try {
+      final response = await http.get(Uri.parse(document.imageUrl!));
+      final documentDirectory = (await getTemporaryDirectory()).path;
+      final imgFile = File('$documentDirectory/flutter.png');
+      imgFile.writeAsBytesSync(response.bodyBytes);
+
+      final message =
+          'Title: ${document.title}\nDescription: ${document.description}\n'
+          'Location: https://www.google.com/maps/search/?api=1&query=${document.lat},${document.lng}';
+
+      Share.shareXFiles([XFile(imgFile.path)], text: message);
+    } catch (e) {
+      print('Error sharing image: $e');
+    }
+  }
+  
   Future<void> _launchUrl(_url) async {
     if (!await launchUrl(_url)) {
       throw Exception('Could not launch $_url');
